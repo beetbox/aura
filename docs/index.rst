@@ -1,5 +1,5 @@
-Urma: the Universal REST Music API
-==================================
+AURA Universal REST API
+=======================
 
 Nothing to see yet! Contents:
 
