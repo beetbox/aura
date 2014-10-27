@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var musicmetadata = require('musicmetadata');
 var walk = require('walk');
@@ -24,8 +26,8 @@ var readMetadata = function (basedir, func) {
   var walker = walk.walk(basedir);
   walker.on("file", function (root, stats, next) {
     var p = path.join(root, stats.name);
-    console.log('read: ' + p);
     trackDict(p, function (d) {
+      console.log('read: ' + p);
       md.push(d);
     });
     next();
