@@ -16,6 +16,18 @@ their meaning according to `RFC 2119`_.
 
 .. _RFC 2119: http://tools.ietf.org/html/rfc2119
 
+Server Information
+------------------
+
+.. http:get:: /aura
+
+... or:
+
+.. http:get:: /aura/server
+
+For indicating protocol version, server name and version, authentication
+status, and specific feature flags.
+
 Resources and Collections
 -------------------------
 
@@ -93,6 +105,19 @@ Other APIs to get media:
 
     Audio file.
 
+    The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
+    in the file.
+
+    The file is returned in an arbitrary audio file format. The server
+    **MUST** set the ``Content-Type`` header to indicate the format.
+
+    The server **MAY** provide multiple encodings of the same audio (i.e., by
+    transcoding the file). This works using the HTTP ``Accept`` header. The
+    client sends a list of formats it supports; the server may provide a file
+    that meets these requirements.
+
+    .. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
+
 .. http:get:: /aura/tracks/(id)/image
 
     Image.
@@ -113,19 +138,6 @@ Artists
 Extensions
 ----------
 
-TODO:
-Some mechanism for *standardized extensions*, which are optional and
-self-reporting. Also allows for proprietary extensions and extensions defined
-elsewhere.
-
-``GET /aura/extensions/``
-
-This includes:
-
-* any notion of a complex query (e.g., beets queries) -- maybe that's
-  proprietary, or maybe the semantics of the query are not defined
-* writable API
-* albums? artists?
-* auth?
-* transcoding
-* server-side player
+Mention *standardized extensions*, which are optional and self-reporting in
+the server information endpoint. Also allows for proprietary extensions and
+extensions defined elsewhere.
