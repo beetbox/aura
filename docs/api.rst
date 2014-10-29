@@ -26,7 +26,7 @@ Server Information
 .. http:get:: /aura/server
 
 For indicating protocol version, server name and version, authentication
-status, and specific feature flags.
+status, and specific feature flags (i.e., extensions).
 
 Resources and Collections
 -------------------------
@@ -110,33 +110,6 @@ track. Here's an example:
 
 Other APIs to get media:
 
-.. http:get:: /aura/tracks/(id)/audio
-    :synopsis: Download the audio file for a track.
-
-    Download the audio file for a track.
-
-    The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
-    in the file.
-
-    The file is returned in an arbitrary audio file format. The server
-    **MUST** set the ``Content-Type`` header to indicate the format.
-
-    *Formats and transcoding.* The server **MAY** provide multiple encodings
-    of the same audio (i.e., by transcoding the file). The server decides
-    which version of the file to send via `HTTP content negotiation`_.
-    Specifically, the client **MAY** specify requested MIME content types in
-    the ``Accept`` header. The server **SHOULD** respond with one of the
-    requested types or a 406 Not Acceptable status. (An omitted ``Accept``
-    header is considered equivalent to ``audio/*``.)
-
-    .. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
-    .. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
-
-.. http:get:: /aura/tracks/(id)/image
-
-    Image.
-
-
 Albums
 ------
 
@@ -149,9 +122,47 @@ Artists
 **MAY**, or 404
 
 
-Extensions
-----------
+Audio
+-----
 
-Mention *standardized extensions*, which are optional and self-reporting in
-the server information endpoint. Also allows for proprietary extensions and
-extensions defined elsewhere.
+.. http:get:: /aura/tracks/(id)/audio
+    :synopsis: Download the audio file for a track.
+
+    Download the audio file for a track.
+
+    The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
+    in the file.
+
+Audio Formats
+'''''''''''''
+
+The file is returned in an arbitrary audio file format. The server
+**MUST** set the ``Content-Type`` header to indicate the format.
+
+*Formats and transcoding.* The server **MAY** provide multiple encodings
+of the same audio (i.e., by transcoding the file). The server decides
+which version of the file to send via `HTTP content negotiation`_.
+Specifically, the client **MAY** specify requested MIME content types in
+the ``Accept`` header. The server **SHOULD** respond with one of the
+requested types or a 406 Not Acceptable status. (An omitted ``Accept``
+header is considered equivalent to ``audio/*``.)
+
+.. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
+.. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
+
+
+Images
+------
+
+TODO: Probably support multiple images. Labeled?
+
+.. http:get:: /aura/tracks/(id)/image
+    :synopsis: Get an image associated with a track.
+
+    Image.
+
+
+.. http:get:: /aura/albums(id)/image
+    :synopsis: Get an album art image.
+
+    Image.

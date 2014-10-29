@@ -8,6 +8,11 @@ servers that host a catalog of music.
 AURA is a lightweight and open alternative to the `DLNA`_ protocols and ad-hoc
 proprietary interfaces such as `DAAP`_.
 
+The API specification is organized as a *core API* that reflects the basic
+concepts and optional *extensions*. While not every sever will implement the
+same extensions, clients can assume that those that do will implement them in
+the same way.
+
 .. _dlna: http://www.dlna.org
 .. _daap: http://en.wikipedia.org/wiki/Digital_Audio_Access_Protocol
 
