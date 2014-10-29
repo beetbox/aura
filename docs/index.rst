@@ -22,3 +22,5 @@ Contents:
     :maxdepth: 2
 
     api
+
+Also see the `complete list of endpoints <http-routingtable.html>`_.

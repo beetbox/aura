@@ -13,6 +13,6 @@ html_theme = 'default'
 
 # HTTP domain config.
 primary_domain = 'http'
-http_index_shortname = 'Reference'
+http_index_shortname = 'reference'
 http_index_localname = 'API Reference'
 http_index_ignore_prefixes = ['/aura']
