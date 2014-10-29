@@ -113,11 +113,19 @@ Other APIs to get media:
 Albums
 ------
 
+.. http:get:: /aura/albums
+
+.. http:get:: /aura/albums/(id)
+
 **MAY**, or 404
 
 
 Artists
 -------
+
+.. http:get:: /aura/artists
+
+.. http:get:: /aura/artists/(id)
 
 **MAY**, or 404
 
@@ -162,7 +170,7 @@ TODO: Probably support multiple images. Labeled?
     Image.
 
 
-.. http:get:: /aura/albums(id)/image
+.. http:get:: /aura/albums/(id)/image
     :synopsis: Get an album art image.
 
     Image.
