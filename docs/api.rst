@@ -78,7 +78,16 @@ It **MAY** have other attributes, including:
 
 The response is a JSON dictionary with a ``tracks`` key mapping to an array of
 dictionaries. The array is still used even when returning only a single
-track. Here's an example::
+track. Here's an example:
+
+.. sourcecode:: http
+
+    GET /aura/tracks/42 HTTP/1.1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
 
     {
       "tracks": [{
@@ -102,8 +111,9 @@ track. Here's an example::
 Other APIs to get media:
 
 .. http:get:: /aura/tracks/(id)/audio
+    :synopsis: Download the audio file for a track.
 
-    Audio file.
+    Download the audio file for a track.
 
     The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
     in the file.
@@ -111,12 +121,16 @@ Other APIs to get media:
     The file is returned in an arbitrary audio file format. The server
     **MUST** set the ``Content-Type`` header to indicate the format.
 
-    The server **MAY** provide multiple encodings of the same audio (i.e., by
-    transcoding the file). This works using the HTTP ``Accept`` header. The
-    client sends a list of formats it supports; the server may provide a file
-    that meets these requirements.
+    *Formats and transcoding.* The server **MAY** provide multiple encodings
+    of the same audio (i.e., by transcoding the file). The server decides
+    which version of the file to send via `HTTP content negotiation`_.
+    Specifically, the client **MAY** specify requested MIME content types in
+    the ``Accept`` header. The server **SHOULD** respond with one of the
+    requested types or a 406 Not Acceptable status. (An omitted ``Accept``
+    header is considered equivalent to ``audio/*``.)
 
     .. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
+    .. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
 
 .. http:get:: /aura/tracks/(id)/image
 
