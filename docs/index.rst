@@ -2,11 +2,11 @@ AURA Universal REST API
 =======================
 
 AURA is an API specification for music libraries. Music players---from HTML5
-applications to mobile apps to embedded devices---can use AURA to talk to
-servers that host a catalog of music.
+applications to mobile apps to embedded devices---use AURA to access servers
+that host catalogs of music. An AURA server can act as a personal alternative
+to centralized cloud services like Spotify or Rdio.
 
-AURA is a lightweight and open alternative to the `DLNA`_ protocols and ad-hoc
-proprietary interfaces such as `DAAP`_.
+The AURA protocol is a lightweight and open alternative to `DLNA`_ or `DAAP`_.
 
 The API specification is organized as a *core API* that reflects the basic
 concepts and optional *extensions*. While not every sever will implement the

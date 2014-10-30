@@ -1,37 +1,93 @@
 Core API Specification
 ======================
 
-The API root **SHOULD** appear under a prefix named ``/aura/``. This
-facilitates servers with multiple APIs, allows for human-readable content on
-the same server, and provides for forward compatibility: future versions of
-this spec may recommend ``/aura2/``, for example.
+This document describes the core AURA protocol, which is a simple `REST`_ API
+built on `JSON`_ resources. The core protocol includes basic, read-only
+access to *tracks* and, optionally, organization into *albums* and *artists*.
+It exposes both metadata and audio.
 
-Responses are in `JSON`_ format, following the `JSON API`_ specification.
+The API adheres to the `JSON API`_ specification wherever reasonable for
+consistency.
 
-.. _JSON: http://www.json.org
-.. _JSON API: http://jsonapi.org
-
-This documentation uses such as "SHOULD" and "MUST" in all caps to invoke
+This description uses words like "SHOULD" and "MUST" in all caps to invoke
 their meaning according to `RFC 2119`_.
 
 .. _RFC 2119: http://tools.ietf.org/html/rfc2119
+.. _JSON: http://www.json.org
+.. _JSON API: http://jsonapi.org
+.. _REST: http://en.wikipedia.org/wiki/Representational_state_transfer
+
+Organization
+------------
+
+The API root **SHOULD** appear under a prefix named ``/aura/``. This
+facilitates servers with multiple APIs, allows for human-readable content at
+the root on the same server, and provides for forward compatibility: future
+versions of this spec may recommend ``/aura2/``, for example.
+
+The MIME type for all responses **SHOULD** be ``application/vnd.api+json``.
 
 Server Information
 ------------------
 
 .. http:get:: /aura
+    :synopsis: Server information and status.
 
-... or:
+    The "root" endpoint exposes global information and status for the AURA
+    server. The response dictionary has a single key, ``server``, which
+    **MUST** contain these keys:
 
-.. http:get:: /aura/server
+    * **aura-version** (string): The version of the AURA spec implemented.
+    * **host** (string): The name of the server software.
+    * **host-version** (string): The version number of the server.
+    * **auth-required** (bool): Whether the user has access to the server. For
+      unsecured servers, this may be true even before authenticating.
+    * **features** (array): A set of strings indicating capabilities of the
+      server. The rest of this document lists optional features that
+      **SHOULD** be indicated by a string present in this array. Proprietary,
+      unspecified features may also appear here.
 
-For indicating protocol version, server name and version, authentication
-status, and specific feature flags (i.e., extensions).
+.. sourcecode:: http
+
+    GET /aura HTTP/1.1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "server": {
+        "aura-version": "0.1.0",
+        "host": "beets",
+        "host-version": "1.6.4",
+        "auth-required": false,
+        "features": [
+          "albums",
+          "artists"
+        ]
+      }
+    }
+
 
 Resources and Collections
 -------------------------
 
-There are tracks, albums, and artists. Only tracks are required.
+The core resource in AURA is the *track*, which represents a single audio
+file and its associated metadata.
+
+The server may also optionally group tracks into *albums* and *artists*. Since
+tracks represent the music itself, albums and artists are not
+required---clients **SHOULD** disable features that depend on browsing by
+album, for example, when the server only exposes individual tracks.
+Clients can still filter tracks by metadata that indicates the album or artist
+they belong to. AURA's optional concepts of *albums* and *artists* are
+appropriate when the server supports metadata that is independent of the
+constituent tracks: cover art for albums, for example, or home towns for
+artists.
+
+The rest of this section describes concepts common to all three resource
+types.
 
 Links
 '''''
@@ -43,11 +99,13 @@ server supports artist or album links but the link is not present (e.g., a
 track is a single with no associated album), the value **MAY** be null instead
 of an id.
 
-Optionally included under ``linked`` in a JSON API "compound document".
+Optionally included under ``linked`` in a JSON API `compound document`_.
 
 ``/aura/tracks/42?include=artist,album``
 ``/aura/albums/42?include=artist,tracks``
 ``/aura/artists/42?include=albums,tracks``
+
+.. _compound document: http://jsonapi.org/format/#document-structure-compound-documents
 
 Filtering
 '''''''''
@@ -76,9 +134,9 @@ It **MAY** have other attributes, including:
 * ``disc``, the index of the medium in the album.
 * ``year``, the release date's year.
 
-The response is a JSON dictionary with a ``tracks`` key mapping to an array of
-dictionaries. The array is still used even when returning only a single
-track. Here's an example:
+The response is a JSON dictionary with a ``tracks`` key mapping either to an
+array of dictionaries (for the collection) or a single dictionary (when a
+specific ID is used) Here's an example:
 
 .. sourcecode:: http
 
@@ -87,17 +145,17 @@ track. Here's an example:
 .. sourcecode:: http
 
     HTTP/1.1 200 OK
-    Content-Type: application/json
+    Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
-        "id": "1",
+      "tracks": {
+        "id": "42",
         "title": "Back in the U.S.S.R.",
         "links": {
           "artist": "3",
           "album": "4"
         }
-      }]
+      }
     }
 
 .. http:get:: /aura/tracks
@@ -171,6 +229,11 @@ TODO: Probably support multiple images. Labeled?
 
 
 .. http:get:: /aura/albums/(id)/image
+    :synopsis: Get an album art image.
+
+    Image.
+
+.. http:get:: /aura/artists/(id)/image
     :synopsis: Get an album art image.
 
     Image.
