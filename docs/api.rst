@@ -27,6 +27,8 @@ versions of this spec may recommend ``/aura2/``, for example.
 
 The MIME type for all responses **SHOULD** be ``application/vnd.api+json``.
 
+.. _server-info:
+
 Server Information
 ------------------
 
@@ -86,24 +88,69 @@ appropriate when the server supports metadata that is independent of the
 constituent tracks: cover art for albums, for example, or home towns for
 artists.
 
-The rest of this section describes concepts common to all three resource
-types.
+Every resource is represented as a JSON object. The rest of this section
+describes concepts common to all three resource types.
+
+.. _links:
 
 Links
 '''''
 
-A track **MAY** contain links to its associated album and artist resources if
-present. These appear as a dictionary under the ``links`` key wherein the
-``artist`` and ``album`` keys are associated with their respective IDs. If the
-server supports artist or album links but the link is not present (e.g., a
-track is a single with no associated album), the value **MAY** be null instead
-of an id.
+Resources can link to each other: for example, a track can link to its
+containing album and, conversely, an album can link to its tracks.
 
-Optionally included under ``linked`` in a JSON API `compound document`_.
+Links appear under the ``links`` key within the resource object. For example,
+a track object may link to its album like this:
 
-``/aura/tracks/42?include=artist,album``
-``/aura/albums/42?include=artist,tracks``
-``/aura/artists/42?include=albums,tracks``
+.. sourcecode:: http
+
+    GET /aura/tracks/42 HTTP/1.1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "tracks": [{
+        "id": "42",
+        ...other track data here...,
+        "links": {
+          "album": "21"
+        }
+      }]
+    }
+
+The client can request inclusion of linked resources. The client provides an
+``include`` request parameter containing a comma-separated list of resources.
+The response then **MUST** include any objects referenced in ``links``
+under a ``linked`` key in the top-level response object. (This kind of
+response is called a `compound document`_ in JSON API.) For example:
+
+.. sourcecode:: http
+
+    GET /aura/tracks/42?include=album HTTP/1.1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "tracks": [{
+        "id": "42",
+        ...,
+        "links": {
+          "album": "21"
+        }
+      }],
+      "linked": {
+        "albums": [{
+          "id": "21",
+          ...
+        }]
+      }
+    }
 
 .. _compound document: http://jsonapi.org/format/#document-structure-compound-documents
 
@@ -134,62 +181,89 @@ It **MAY** have other attributes, including:
 * ``disc``, the index of the medium in the album.
 * ``year``, the release date's year.
 
-The response is a JSON dictionary with a ``tracks`` key mapping either to an
-array of dictionaries (for the collection) or a single dictionary (when a
-specific ID is used) Here's an example:
-
-.. sourcecode:: http
-
-    GET /aura/tracks/42 HTTP/1.1
-
-.. sourcecode:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-      "tracks": {
-        "id": "42",
-        "title": "Back in the U.S.S.R.",
-        "links": {
-          "artist": "3",
-          "album": "4"
-        }
-      }
-    }
+Track resources **MAY** link to a single album with the ``album`` key and a
+single artist under the ``artist`` key. The valid ``include`` values for
+retrieving compound documents are ``artist`` and ``album`` (see :ref:`links`).
 
 .. http:get:: /aura/tracks
+    :synopsis: All tracks in the library.
 
-    The collection of all tracks present, represented as an array.
+    The collection of all tracks in the library. The response is a JSON
+    object with at least the key ``tracks``, which maps to a JSON array of
+    track objects.
 
 .. http:get:: /aura/tracks/(id)
+    :synopsis: A specific track.
 
-    An individual track resource. In a one-element array.
-
-Other APIs to get media:
+    An individual track resource. The response is a JSON object where key
+    ``tracks`` maps to a single track object.
 
 Albums
 ------
 
+Album resources are optional. If a server supports albums, it **MUST**
+indicate the support by including the string "albums" in its ``features`` list
+(see :ref:`server-info`). If the server does not support albums, it **MUST**
+respond with an HTTP 404 error for all ``/aura/albums`` URLs.
+
+Each album object **MUST** have at least these keys:
+
+* ``title``
+* ``artist``
+
+Album resources **MUST** link to their constituent tracks under the ``tracks``
+key. They **MAY** also link to a single artist under the ``artist`` key.
+These keys are also the valid values for the ``include`` parameter (see
+:ref:`links`).
+
 .. http:get:: /aura/albums
+    :synopsis: All albums in the library.
+
+    The collection of all albums in the library. The response is a JSON
+    object with at least the key ``albums``, which maps to a JSON array of
+    album objects.
 
 .. http:get:: /aura/albums/(id)
+    :synopsis: A specific album.
 
-**MAY**, or 404
+    An individual album resource. The response is a JSON object where key
+    ``albums`` maps to a single track object.
 
 
 Artists
 -------
 
+Artist resources are optional. If a server supports artists, it **MUST**
+indicate the support by including the string "artists" in its ``features``
+list (see :ref:`server-info`). If the server does not support artists, it
+**MUST** respond with an HTTP 404 error for all ``/aura/artists`` URLs.
+
+Each artist **MUST** have at least these keys:
+
+* ``name``
+
+Artist resources **MUST** link to their associated tracks under the ``tracks``
+key and **MAY** link to their albums artist under the ``albums`` key.
+These keys are also the valid values for the ``include`` parameter (see
+:ref:`links`).
+
 .. http:get:: /aura/artists
+    :synopsis: All artists in the library.
+
+    The collection of all artists in the library. The response is a JSON
+    object with at least the key ``artists``, which maps to a JSON array of
+    artists objects.
 
 .. http:get:: /aura/artists/(id)
+    :synopsis: A specific artist.
 
-**MAY**, or 404
-
+    An individual artist resource. The response is a JSON object where key
+    ``artists`` maps to a single track object.
 
 Audio
 -----
+
+The server supplies audio files for each track.
 
 .. http:get:: /aura/tracks/(id)/audio
     :synopsis: Download the audio file for a track.
@@ -220,20 +294,30 @@ header is considered equivalent to ``audio/*``.)
 Images
 ------
 
-TODO: Probably support multiple images. Labeled?
+Images can be associated with tracks, albums, and artists. Most pertinently,
+albums may have associated cover art.
 
-.. http:get:: /aura/tracks/(id)/image
+When a resource has associated images, it **MUST** have the key ``images``.
+The value is the number of images. The first image is considered the "primary"
+image.
+
+The client can then fetch each image file by its index. The first image has
+number 1. Attempting to retrieve any image beyond the reported number of
+images **MUST** yield an HTTP 404 error. For valid indices, the response's
+``Content-Type`` header **MUST** indicate the type of the image file returned.
+
+.. http:get:: /aura/tracks/(id)/images/(number)
     :synopsis: Get an image associated with a track.
 
-    Image.
+    Get an image associated with a track.
 
 
-.. http:get:: /aura/albums/(id)/image
+.. http:get:: /aura/albums/(id)/images/(number)
     :synopsis: Get an album art image.
 
-    Image.
+    Get an album art image.
 
-.. http:get:: /aura/artists/(id)/image
-    :synopsis: Get an album art image.
+.. http:get:: /aura/artists/(id)/image/(number)
+    :synopsis: Get the image for an artist.
 
-    Image.
+    Get the image for an artist.

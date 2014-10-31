@@ -19,7 +19,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext auto
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -45,6 +45,10 @@ help:
 	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+
+# My magical rebuilding, Safari-reloading auto target.
+auto:
+	watchmedo shell-command --patterns='*.rst' --ignore-pattern='_build/*' --recursive --command='if [ "$${watch_event_type}" == "created" -o "$${watch_event_type}" == "modified" ]; then make html ; osascript -l JavaScript refresh_safari.js; fi' --wait
 
 clean:
 	rm -rf $(BUILDDIR)/*
