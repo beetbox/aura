@@ -17,3 +17,11 @@ This repository also hosts a very simple reference server and client implemented
     $ open webclient/index.html  # Open the client in a browser.
 
 The reference implementation is incomplete and extremely preliminary. It demonstrates listing tracks and sending audio files.
+
+## Get Involved
+
+This is an experimental project! We'd like to create an API that's suited to a broad range of music players and music libraries---it should be a good basis for any networked music project idea you have.
+
+If you're interested in helping guide the direction of the AURA project, we'd love to collaborate. Please [get in touch][email].
+
+[email]: mailto:adrian@radbox.org
