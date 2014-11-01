@@ -52,16 +52,28 @@ readMetadata(process.argv[2] || '.', function (tracks) {
     }
   };
 
-  var app = express();
-  app.get('/tracks', function (req, res) {
+  // The Express Router contains all the AURA endpoints. We set up global
+  // middleware for the router to set the default content type.
+  var aura = express.Router();
+  aura.use(function(req, res, next) {
+    res.set('Content-Type', 'application/vnd.api+json');
+    next();
+  });
+
+  // AURA API endpoints.
+  aura.get('/tracks', function (req, res) {
     res.json({ 'tracks': tracks });
   });
-  app.get('/tracks/:id', loadTrack, function (req, res) {
-    res.json({ 'tracks': [ req.track ] });
+  aura.get('/tracks/:id', loadTrack, function (req, res) {
+    res.json({ 'tracks': req.track });
   });
-  app.get('/tracks/:id/audio', loadTrack, function (req, res) {
+  aura.get('/tracks/:id/audio', loadTrack, function (req, res) {
     res.sendFile(req.track.path);
   });
+
+  // An Express Application to host the API under the /aura prefix.
+  var app = express();
+  app.use('/aura', aura);
 
   var server = app.listen(8338, function () {
     var host = server.address().address;
