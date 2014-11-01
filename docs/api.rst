@@ -210,8 +210,23 @@ Optional Fields
 Tracks **MAY** have these keys:
 
 * ``track``, integer: The index of the track on its album.
+* ``tracktotal``, integer: The number of tracks on the album.
 * ``disc``, integer: The index of the medium in the album.
-* ``year``, integer: The release date's year.
+* ``disctotal``, integer: The number of media in the album.
+* ``year``, integer: The year the track was released.
+* ``month``, integer: The release date's month.
+* ``day``, integer: The release date's day of the month.
+* ``bpm``, integer: Tempo, in beats per minute.
+* ``genre``, string: The track's musical genre.
+* ``mbid``, string: A `MusicBrainz`_ recording id.
+
+These optional fields reflect audio metadata:
+
+* ``type``, string: The MIME type of the associated audio file.
+* ``length``, integer: The duration of the audio.
+* ``samplerate``, integer: The number of samples per second in the audio.
+* ``bitrate``, integer: The number of bits per second in the encoding.
+* ``bitdepth``, integer: The number of bits per sample.
 
 Links
 '''''
@@ -255,7 +270,15 @@ Each album object **MUST** have at least these keys:
 Optional Fields
 '''''''''''''''
 
-TODO
+Albums **MAY** have these keys:
+
+* ``tracktotal``, integer: The number of tracks on the album.
+* ``disctotal``, integer: The number of media in the album.
+* ``year``, integer: The year the album was released.
+* ``month``, integer: The release date's month.
+* ``day``, integer: The release date's day of the month.
+* ``genre``, string: The album's musical genre.
+* ``mbid``, string: A `MusicBrainz`_ release id.
 
 Links
 '''''
@@ -298,7 +321,11 @@ Each artist **MUST** have at least these keys:
 Optional Fields
 '''''''''''''''
 
-TODO
+Artists **MAY** have these keys:
+
+* ``mbid``, string: A `MusicBrainz`_ artist id.
+
+.. _musicbrainz: http://musicbrainz.org
 
 Links
 '''''
