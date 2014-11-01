@@ -5,6 +5,7 @@ var musicmetadata = require('musicmetadata');
 var walk = require('walk');
 var path = require('path');
 var express = require('express');
+var cors = require('cors');
 
 // Read a track dictionary for a music file.
 var trackDict = function(path, func) {
@@ -52,9 +53,11 @@ readMetadata(process.argv[2] || '.', function (tracks) {
     }
   };
 
-  // The Express Router contains all the AURA endpoints. We set up global
-  // middleware for the router to set the default content type.
+  // The Express Router contains all the AURA endpoints.
   var aura = express.Router();
+  // Enable cross-origin resource sharing.
+  aura.use(cors());
+  // Set the default content type.
   aura.use(function(req, res, next) {
     res.set('Content-Type', 'application/vnd.api+json');
     next();
