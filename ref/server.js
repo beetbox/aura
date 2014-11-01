@@ -57,17 +57,18 @@ readMetadata(process.argv[2] || '.', function (tracks) {
   var aura = express.Router();
   // Enable cross-origin resource sharing.
   aura.use(cors());
-  // Set the default content type.
-  aura.use(function(req, res, next) {
+
+  // Utility for JSON endpoints to set the content type.
+  var jtype = function(req, res, next) {
     res.set('Content-Type', 'application/vnd.api+json');
     next();
-  });
+  };
 
   // AURA API endpoints.
-  aura.get('/tracks', function (req, res) {
+  aura.get('/tracks', jtype, function (req, res) {
     res.json({ 'tracks': tracks });
   });
-  aura.get('/tracks/:id', loadTrack, function (req, res) {
+  aura.get('/tracks/:id', jtype, loadTrack, function (req, res) {
     res.json({ 'tracks': req.track });
   });
   aura.get('/tracks/:id/audio', loadTrack, function (req, res) {

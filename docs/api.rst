@@ -345,16 +345,19 @@ The server supplies audio files for each track.
 
     Download the audio file for a track.
 
+    The file is returned in an arbitrary audio file format. The server
+    **MUST** set the ``Content-Type`` header to indicate the format.
+
+    The server **SHOULD** use the HTTP `Content-Disposition`_ header to supply
+    a filename.
+
     The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
     in the file.
 
-Audio Formats
-'''''''''''''
+Alternate Audio Formats
+'''''''''''''''''''''''
 
-The file is returned in an arbitrary audio file format. The server
-**MUST** set the ``Content-Type`` header to indicate the format.
-
-*Formats and transcoding.* The server **MAY** provide multiple encodings
+The server **MAY** provide multiple encodings
 of the same audio (i.e., by transcoding the file). The server decides
 which version of the file to send via `HTTP content negotiation`_.
 Specifically, the client **MAY** specify requested MIME content types in
