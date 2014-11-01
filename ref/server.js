@@ -72,7 +72,12 @@ readMetadata(process.argv[2] || '.', function (tracks) {
     res.json({ 'tracks': req.track });
   });
   aura.get('/tracks/:id/audio', loadTrack, function (req, res) {
-    res.sendFile(req.track.path);
+    var fname = path.basename(req.track.path);
+    res.sendFile(req.track.path, {
+      'headers': {
+        'Content-Disposition': 'attachment; filename="' + fname + '"'
+      }
+    });
   });
 
   // An Express Application to host the API under the /aura prefix.
