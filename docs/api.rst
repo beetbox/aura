@@ -88,8 +88,12 @@ appropriate when the server supports metadata that is independent of the
 constituent tracks: cover art for albums, for example, or home towns for
 artists.
 
-Every resource is represented as a JSON object. The rest of this section
-describes concepts common to all three resource types.
+Every resource is represented as a JSON object. Each resource type has a list
+of keys that are *required* on each object and a list of *optional* fields
+that the server may support. Servers may also provide other, non-standard
+fields not listed in this specification. The optional fields are included in
+an effort to standardize the name and format of common (albeit not universal)
+metadata.
 
 .. _links:
 
@@ -157,33 +161,25 @@ response is called a `compound document`_ in JSON API.) For example:
 Filtering
 '''''''''
 
-Strict matching only, using query parameters on each collection.
+Servers provide filtered lists of resources according to metadata. To request
+a subset of a collection, the client uses request parameters specifying the
+fields or links to filter on. If the client sends a parameter ``key=value``,
+the server **MUST** respond with only those resources whose ``key`` field
+exactly matches ``value``.
 
-``/aura/tracks?title=Blackbird``
-``/aura/tracks?album=42``
+For example, the request ``/aura/tracks?title=Blackbird`` finds the track
+titled "Blackbird" and ``/aura/tracks?album=42`` gets all the tracks for the
+album with id 42.
+
+Filtering is by exact match only (i.e., no substring or case-insensitive
+matching is performed). More flexible queries may be eventually be specified
+in an AURA extension.
 
 
 Tracks
 ------
 
 An AURA server **MUST** expose a collection of tracks (i.e., individual songs).
-
-A track resource **MUST** have an ``id`` attribute, which is a uniquely
-identifying string. It **SHOULD** also have these attributes:
-
-* ``title``
-* ``artist``
-* ``album``
-
-It **MAY** have other attributes, including:
-
-* ``track``, the index of the track on its album.
-* ``disc``, the index of the medium in the album.
-* ``year``, the release date's year.
-
-Track resources **MAY** link to a single album with the ``album`` key and a
-single artist under the ``artist`` key. The valid ``include`` values for
-retrieving compound documents are ``artist`` and ``album`` (see :ref:`links`).
 
 .. http:get:: /aura/tracks
     :synopsis: All tracks in the library.
@@ -198,6 +194,32 @@ retrieving compound documents are ``artist`` and ``album`` (see :ref:`links`).
     An individual track resource. The response is a JSON object where key
     ``tracks`` maps to a single track object.
 
+Required Fields
+'''''''''''''''
+
+Track resources **MUST** have these keys:
+
+* ``id``, string: A unique identifier.
+* ``title``, string: The song's name.
+* ``artist``, string: The recording artist.
+* ``album``, string: The name of the release the track appears on.
+
+Optional Fields
+'''''''''''''''
+
+Tracks **MAY** have these keys:
+
+* ``track``, integer: The index of the track on its album.
+* ``disc``, integer: The index of the medium in the album.
+* ``year``, integer: The release date's year.
+
+Links
+'''''
+
+Track resources **MAY** link to a single album with the ``album`` key and a
+single artist under the ``artist`` key. The valid ``include`` values for
+retrieving compound documents are ``artist`` and ``album`` (see :ref:`links`).
+
 Albums
 ------
 
@@ -205,16 +227,6 @@ Album resources are optional. If a server supports albums, it **MUST**
 indicate the support by including the string "albums" in its ``features`` list
 (see :ref:`server-info`). If the server does not support albums, it **MUST**
 respond with an HTTP 404 error for all ``/aura/albums`` URLs.
-
-Each album object **MUST** have at least these keys:
-
-* ``title``
-* ``artist``
-
-Album resources **MUST** link to their constituent tracks under the ``tracks``
-key. They **MAY** also link to a single artist under the ``artist`` key.
-These keys are also the valid values for the ``include`` parameter (see
-:ref:`links`).
 
 .. http:get:: /aura/albums
     :synopsis: All albums in the library.
@@ -229,6 +241,30 @@ These keys are also the valid values for the ``include`` parameter (see
     An individual album resource. The response is a JSON object where key
     ``albums`` maps to a single track object.
 
+Required Fields
+'''''''''''''''
+
+Each album object **MUST** have at least these keys:
+
+* ``id``, string: A unique identifier.
+* ``title``, string: The album's name.
+* ``artist``, artist: The name of the artist responsible for the release (or
+  another indicator such as "Various Artists" when no specific artist is
+  relevant).
+
+Optional Fields
+'''''''''''''''
+
+TODO
+
+Links
+'''''
+
+Album resources **MUST** link to their constituent tracks under the ``tracks``
+key. They **MAY** also link to a single artist under the ``artist`` key.
+These keys are also the valid values for the ``include`` parameter (see
+:ref:`links`).
+
 
 Artists
 -------
@@ -237,15 +273,6 @@ Artist resources are optional. If a server supports artists, it **MUST**
 indicate the support by including the string "artists" in its ``features``
 list (see :ref:`server-info`). If the server does not support artists, it
 **MUST** respond with an HTTP 404 error for all ``/aura/artists`` URLs.
-
-Each artist **MUST** have at least these keys:
-
-* ``name``
-
-Artist resources **MUST** link to their associated tracks under the ``tracks``
-key and **MAY** link to their albums artist under the ``albums`` key.
-These keys are also the valid values for the ``include`` parameter (see
-:ref:`links`).
 
 .. http:get:: /aura/artists
     :synopsis: All artists in the library.
@@ -259,6 +286,27 @@ These keys are also the valid values for the ``include`` parameter (see
 
     An individual artist resource. The response is a JSON object where key
     ``artists`` maps to a single track object.
+
+Required Fields
+'''''''''''''''
+
+Each artist **MUST** have at least these keys:
+
+* ``id``, string: A unique identifier.
+* ``name``, string: The artist's name.
+
+Optional Fields
+'''''''''''''''
+
+TODO
+
+Links
+'''''
+
+Artist resources **MUST** link to their associated tracks under the ``tracks``
+key and **MAY** link to their albums artist under the ``albums`` key.
+These keys are also the valid values for the ``include`` parameter (see
+:ref:`links`).
 
 Audio
 -----
