@@ -202,13 +202,13 @@ Track resources **MUST** have these keys:
 * ``id``, string: A unique identifier.
 * ``title``, string: The song's name.
 * ``artist``, string: The recording artist.
-* ``album``, string: The name of the release the track appears on.
 
 Optional Fields
 '''''''''''''''
 
 Tracks **MAY** have these keys:
 
+* ``album``, string: The name of the release the track appears on.
 * ``track``, integer: The index of the track on its album.
 * ``tracktotal``, integer: The number of tracks on the album.
 * ``disc``, integer: The index of the medium in the album.
@@ -219,6 +219,8 @@ Tracks **MAY** have these keys:
 * ``bpm``, integer: Tempo, in beats per minute.
 * ``genre``, string: The track's musical genre.
 * ``mbid``, string: A `MusicBrainz`_ recording id.
+* ``composer``, string: The name of the music's composer.
+* ``albumartist``, string: The artist for the release the track appears on.
 
 These optional fields reflect audio metadata:
 
