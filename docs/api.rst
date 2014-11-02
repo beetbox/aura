@@ -356,16 +356,29 @@ The server supplies audio files for each track.
     The server **SHOULD** support HTTP `range requests`_ to facilitate seeking
     in the file.
 
-Alternate Audio Formats
-'''''''''''''''''''''''
+Audio Formats and Quality
+'''''''''''''''''''''''''
 
-The server **MAY** provide multiple encodings
-of the same audio (i.e., by transcoding the file). The server decides
-which version of the file to send via `HTTP content negotiation`_.
-Specifically, the client **MAY** specify requested MIME content types in
-the ``Accept`` header. The server **SHOULD** respond with one of the
-requested types or a 406 Not Acceptable status. (An omitted ``Accept``
-header is considered equivalent to ``audio/*``.)
+The server can provide multiple encodings of the same audio---i.e., by
+transcoding the file. This can help when the client supports a limited range
+of audio codecs (e.g., in browser environments) and when bandwidth is limited
+(e.g., to avoid streaming lossless audio over a mobile connection).
+
+The server decides which version of the file to send using `HTTP content
+negotiation`_. Specifically, the client **MAY** specify the kinds of content
+it requests in the HTTP ``Accept`` header. The header is a comma-separated
+list of types, which consist of a MIME type and (optionally) some parameters.
+To request audio under a maximum bitrate, the client uses a ``bitrate``
+parameter to specify the maximum bits per second it is willing to accept.
+
+For example, the header ``Accept: audio/ogg, audio/mpeg`` requests audio in
+either MP3 or Ogg Vorbis format with no quality constraints. Similarly,
+``Accept: audio/ogg;bitrate=128000`` requests Vobris audio at a bitrate of
+128kbps or lower.
+
+The server **SHOULD** respond with one of the requested types or a 406 Not
+Acceptable status (i.e., if it does not support transcoding). An omitted
+``Accept`` header is considered equivalent to ``audio/*``.
 
 .. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
 .. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
