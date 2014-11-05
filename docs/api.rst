@@ -175,6 +175,75 @@ Filtering is by exact match only (i.e., no substring or case-insensitive
 matching is performed). More flexible queries may be eventually be specified
 in an AURA extension.
 
+Pagination
+''''''''''
+
+Collection endpoints can return truncated results to avoid potential
+performance issues on both the client and the server. Pagination works using
+an opaque *continuation token* that describes how to retrieve the next chunk
+of results. (In practice, the token could be the offset in the collection, the
+id of the next item to return, or a reference to a database cursor.)
+Truncation can be requested by the client or unilaterally imposed by the
+server.
+
+Pagination applies to ``GET`` requests for the three collection endpoints
+(``/aura/tracks``, ``/aura/albums``, and ``/aura/artists``). A server **MAY**
+return a subset of the resources in a collection for any such request. If it
+does so, it **MUST** include a ``continue`` key in the response JSON document.
+The ``continue`` value is an opaque string.
+
+The client **MAY** provide the string as a ``continue`` parameter in a
+subsequent ``GET`` request for the same resource. The server **MUST** then
+respond with a new set of resources. If there are no more resources in the
+collection, the server **MUST** not include the ``continue`` key in the
+response. The concatenation of all resources produced in a sequence of these
+continued responses **MUST** be the full sequence of resources in the
+collection (i.e., no overlapping and no gaps), provided that the collection is
+not modified during the sequence.
+
+The client **MAY** include a ``limit`` parameter (an integer) with a
+collection ``GET`` request. The server **MUST** respond with *at most* that
+number of resources, although it may return fewer. (A ``continue`` token must
+be supplied if there are more results, as above.)
+
+For example, a client could request a "page" of results with a single result:
+
+.. sourcecode:: http
+
+    GET /aura/tracks?limit=1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "tracks": [{
+        ...track data here...
+      }],
+      "continue": "sometoken"
+    }
+
+The client can then issue another request for the next chunk:
+
+.. sourcecode:: http
+
+    GET /aura/tracks?limit=1&continue=sometoken
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "tracks": [{
+        ...another track data here...
+      }]
+    }
+
+The absence of a ``continue`` key indicates that the sequence is finished
+(there are only two tracks in the library).
+
 
 Tracks
 ------
