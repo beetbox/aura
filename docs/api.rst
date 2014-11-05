@@ -304,6 +304,7 @@ These optional fields reflect audio metadata:
   sample per channel.)
 * ``bitrate``, integer: The number of bits per second in the encoding.
 * ``bitdepth``, integer: The number of bits per sample.
+* ``size``, integer: The size of the audio file in bytes.
 
 Links
 '''''
@@ -466,27 +467,81 @@ Images
 Images can be associated with tracks, albums, and artists. Most pertinently,
 albums may have associated cover art.
 
-When a resource has associated images, it **MUST** have the key ``images``.
-The value is the number of images. The first image is considered the "primary"
-image.
+Each kind of resource is associated with its images via links (see
+:ref:`links`). The id for an image need not be globally unique; it only needs
+to be unique for the linked resource---a simple index, suffices for example.
+Clients can request information about resources either by explicitly
+requesting the image collection for a resource or by using an
+``?include=images`` parameter, as with other links. Unlike other resources,
+requesting a specific image returns the actual image data.
 
-The client can then fetch each image file by its index. The first image has
-number 1. Attempting to retrieve any image beyond the reported number of
-images **MUST** yield an HTTP 404 error. For valid indices, the response's
-``Content-Type`` header **MUST** indicate the type of the image file returned.
+For the image file endpoints, the response's ``Content-Type`` header **MUST**
+indicate the type of the image file returned.
 
-.. http:get:: /aura/tracks/(id)/images/(number)
+.. http:get:: /aura/tracks/(id)/images
+    :synopsis: Get information about images associated with a track.
+
+    Get the collection of metadata about the images associated with a track.
+
+.. http:get:: /aura/tracks/(id)/images/(image_id)
     :synopsis: Get an image associated with a track.
 
-    Get an image associated with a track.
+    Get an image file associated with a track.
 
+.. http:get:: /albums/(id)/images
+    :synopsis: Get information about album art images.
 
-.. http:get:: /aura/albums/(id)/images/(number)
+    Get the collection of metadata about album art images.
+
+.. http:get:: /aura/albums/(id)/images/(image_id)
     :synopsis: Get an album art image.
 
-    Get an album art image.
+    Get an album art image file.
 
-.. http:get:: /aura/artists/(id)/image/(number)
-    :synopsis: Get the image for an artist.
+.. http:get:: /aura/artists/(id)/images
+    :synopsis: Get information about images for an artist.
 
-    Get the image for an artist.
+    Get the collection of metadata about the images for an artist.
+
+.. http:get:: /aura/artists/(id)/image/(image_id)
+    :synopsis: Get an image for an artist.
+
+    Get the image file for an artist.
+
+For example, a track with images indicates those images' ids via an ``images``
+key on the ``links`` object. Specifying ``images`` in the ``include``
+parameter requests more data under the response's ``linked`` key:
+
+.. sourcecode:: http
+
+    GET /aura/tracks/42?include=images
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "tracks": [{
+        "id": "42",
+        "links": {
+          "images": ["1"]
+        }
+      }],
+      "linked": {
+        "imaages": [{ "id": "1", ... }]
+      }
+    }
+
+Optional Fields
+'''''''''''''''
+
+Image metadata resources are only required to have an ``id`` field. These
+other fields are optional:
+
+* ``role``, string: A description of the image's purpose: "cover" for primary
+  album art, etc.
+* ``type``, string: The MIME type of the image.
+* ``width``, integer: The image's width in pixels.
+* ``height``, integer: The image's height in pixels.
+* ``size``, integer: The size of the image data in bytes.
