@@ -225,8 +225,10 @@ Tracks **MAY** have these keys:
 These optional fields reflect audio metadata:
 
 * ``type``, string: The MIME type of the associated audio file.
-* ``length``, integer: The duration of the audio.
+* ``length``, float: The duration of the audio in seconds.
 * ``samplerate``, integer: The number of samples per second in the audio.
+* ``samplecount``, integer: The total number of samples (frames) in the audio.
+  (The exact length can be calculated from the sample rate and sample count.)
 * ``bitrate``, integer: The number of bits per second in the encoding.
 * ``bitdepth``, integer: The number of bits per sample.
 
