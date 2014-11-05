@@ -39,15 +39,15 @@ Server Information
     server. The response dictionary has a single key, ``server``, which
     **MUST** contain these keys:
 
-    * **aura-version** (string): The version of the AURA spec implemented.
-    * **host** (string): The name of the server software.
-    * **host-version** (string): The version number of the server.
-    * **auth-required** (bool): Whether the user has access to the server. For
+    * **aura-version**, string: The version of the AURA spec implemented.
+    * **host**, string: The name of the server software.
+    * **host-version**, string: The version number of the server.
+    * **auth-required**, bool: Whether the user has access to the server. For
       unsecured servers, this may be true even before authenticating.
-    * **features** (array): A set of strings indicating capabilities of the
-      server. The rest of this document lists optional features that
-      **SHOULD** be indicated by a string present in this array. Proprietary,
-      unspecified features may also appear here.
+    * **features**, string array: The capabilities of the server. The rest of
+      this document lists optional features that **SHOULD** be indicated by a
+      string present in this array. Proprietary, unspecified features may also
+      appear here.
 
 .. sourcecode:: http
 
