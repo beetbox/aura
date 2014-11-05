@@ -201,7 +201,7 @@ Track resources **MUST** have these keys:
 
 * ``id``, string: A unique identifier.
 * ``title``, string: The song's name.
-* ``artist``, string: The recording artist.
+* ``artist``, string array: The recording artists.
 
 Optional Fields
 '''''''''''''''
@@ -217,10 +217,11 @@ Tracks **MAY** have these keys:
 * ``month``, integer: The release date's month.
 * ``day``, integer: The release date's day of the month.
 * ``bpm``, integer: Tempo, in beats per minute.
-* ``genre``, string: The track's musical genre.
+* ``genre``, string array: The track's musical genres.
 * ``mbid``, string: A `MusicBrainz`_ recording id.
-* ``composer``, string: The name of the music's composer.
-* ``albumartist``, string: The artist for the release the track appears on.
+* ``composer``, string array: The names of the music's composers.
+* ``albumartist``, string array: The artists for the release the track appears
+  on.
 
 These optional fields reflect audio metadata:
 
@@ -267,9 +268,9 @@ Each album object **MUST** have at least these keys:
 
 * ``id``, string: A unique identifier.
 * ``title``, string: The album's name.
-* ``artist``, artist: The name of the artist responsible for the release (or
-  another indicator such as "Various Artists" when no specific artist is
-  relevant).
+* ``artist``, string array: The names of the artists responsible for the
+  release (or another indicator such as "Various Artists" when no specific
+  artist is relevant).
 
 Optional Fields
 '''''''''''''''
@@ -281,7 +282,7 @@ Albums **MAY** have these keys:
 * ``year``, integer: The year the album was released.
 * ``month``, integer: The release date's month.
 * ``day``, integer: The release date's day of the month.
-* ``genre``, string: The album's musical genre.
+* ``genre``, string array: The album's musical genres.
 * ``mbid``, string: A `MusicBrainz`_ release id.
 
 Links
