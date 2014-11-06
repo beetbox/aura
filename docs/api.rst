@@ -120,7 +120,7 @@ a track object may link to its album like this:
         "id": "42",
         ...other track data here...,
         "links": {
-          "album": "21"
+          "albums": ["21"]
         }
       }]
     }
@@ -133,7 +133,7 @@ response is called a `compound document`_ in JSON API.) For example:
 
 .. sourcecode:: http
 
-    GET /aura/tracks/42?include=album HTTP/1.1
+    GET /aura/tracks/42?include=albums HTTP/1.1
 
 .. sourcecode:: http
 
@@ -145,7 +145,7 @@ response is called a `compound document`_ in JSON API.) For example:
         "id": "42",
         ...,
         "links": {
-          "album": "21"
+          "albums": ["21"]
         }
       }],
       "linked": {
@@ -168,8 +168,7 @@ the server **MUST** respond with only those resources whose ``key`` field
 exactly matches ``value``.
 
 For example, the request ``/aura/tracks?title=Blackbird`` finds the track
-titled "Blackbird" and ``/aura/tracks?album=42`` gets all the tracks for the
-album with id 42.
+titled "Blackbird".
 
 Filtering is by exact match only (i.e., no substring or case-insensitive
 matching is performed). More flexible queries may be eventually be specified
@@ -310,9 +309,10 @@ These optional fields reflect audio metadata:
 Links
 '''''
 
-Track resources **MAY** link to a single album with the ``album`` key and a
-single artist under the ``artist`` key. The valid ``include`` values for
-retrieving compound documents are ``artist`` and ``album`` (see :ref:`links`).
+Track resources **MAY** link to albums they appear on and their recording
+artists using the ``albums`` and ``artists`` keys. The valid ``include``
+values for retrieving compound documents are, correspondingly, ``artists`` and
+``albums`` (see :ref:`links`).
 
 Albums
 ------
@@ -363,8 +363,8 @@ Links
 '''''
 
 Album resources **MUST** link to their constituent tracks under the ``tracks``
-key. They **MAY** also link to a single artist under the ``artist`` key.
-These keys are also the valid values for the ``include`` parameter (see
+key. They **MAY** also link their performing artists under the ``artists``
+key. These keys are also the valid values for the ``include`` parameter (see
 :ref:`links`).
 
 
