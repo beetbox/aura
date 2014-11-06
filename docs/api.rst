@@ -291,6 +291,7 @@ Tracks **MAY** have these keys:
 * ``composer``, string array: The names of the music's composers.
 * ``albumartist``, string array: The artists for the release the track appears
   on.
+* ``comments``, string: Free-form, user-specified information.
 
 These optional fields reflect audio metadata:
 
