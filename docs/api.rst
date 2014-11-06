@@ -200,6 +200,13 @@ continued responses **MUST** be the full sequence of resources in the
 collection (i.e., no overlapping and no gaps), provided that the collection is
 not modified during the sequence.
 
+A continuation token is not guaranteed to be useful after a single use. Once a
+token is used in a request, the server **MAY** respond to subsequent requests
+with the same token with an HTTP 410 "Gone" error. The server may also
+invalidate unused tokens after an implementation-defined expiration
+period. (This is critical for servers that retain state for each in-progress
+pagination sequence.)
+
 The client **MAY** include a ``limit`` parameter (an integer) with a
 collection ``GET`` request. The server **MUST** respond with *at most* that
 number of resources, although it may return fewer. (A ``continue`` token must
