@@ -302,7 +302,7 @@ Tracks **MAY** have these keys:
 These optional fields reflect audio metadata:
 
 * ``type``, string: The MIME type of the associated audio file.
-* ``length``, float: The duration of the audio in seconds.
+* ``duration``, float: The (approximate) length of the audio in seconds.
 * ``framerate``, integer: The number of frames per second in the audio.
 * ``framecount``, integer: The total number of frames in the audio.
   (The exact length can be calculated as the product of the frame rate and
