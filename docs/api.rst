@@ -411,7 +411,7 @@ Optional Fields
 
 Artists **MAY** have these keys:
 
-* ``mbid``, string: A `MusicBrainz`_ artist id.
+* ``artist_mbid``, string: A `MusicBrainz`_ artist id.
 
 .. _musicbrainz: http://musicbrainz.org
 
