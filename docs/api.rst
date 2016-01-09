@@ -6,8 +6,7 @@ built on `JSON`_ resources. The core protocol includes basic, read-only
 access to *tracks* and, optionally, organization into *albums* and *artists*.
 It exposes both metadata and audio.
 
-The API adheres to the `JSON API`_ specification wherever reasonable for
-consistency.
+The API adheres to the `JSON API`_ 1.0 specification.
 
 This description uses words like "SHOULD" and "MUST" in all caps to invoke
 their meaning according to `RFC 2119`_.
@@ -17,6 +16,7 @@ their meaning according to `RFC 2119`_.
 .. _JSON API: http://jsonapi.org
 .. _REST: http://en.wikipedia.org/wiki/Representational_state_transfer
 
+
 Organization
 ------------
 
@@ -25,33 +25,43 @@ facilitates servers with multiple APIs, allows for human-readable content at
 the root on the same server, and provides for forward compatibility: future
 versions of this spec may recommend ``/aura2/``, for example.
 
-The MIME type for all responses **SHOULD** be ``application/vnd.api+json``.
+Response Format and Errors
+''''''''''''''''''''''''''
 
+The MIME type for all responses **MUST** be ``application/vnd.api+json``.
+Every response is a `JSON`_ object.
+When a request is successful, the document has a top-level key ``data``
+corresponding to the response's "primary data."
+When it fails, the document has an ``errors`` key, which maps to an array of
+JSON API `error objects`_.
+Other keys may also be present, as described below.
+
+.. _error objects: http://jsonapi.org/format/#errors
 .. _server-info:
+
 
 Server Information
 ------------------
 
-.. http:get:: /aura
+.. http:get:: /aura/server
     :synopsis: Server information and status.
 
     The "root" endpoint exposes global information and status for the AURA
-    server. The response dictionary has a single key, ``server``, which
+    server. The response's ``data`` key maps to a `resource object`_
+    dictionary representing the server. The object's ``attributes`` key
     **MUST** contain these keys:
 
     * **aura-version**, string: The version of the AURA spec implemented.
-    * **host**, string: The name of the server software.
-    * **host-version**, string: The version number of the server.
+    * **server**, string: The name of the server software.
+    * **server-version**, string: The version number of the server.
     * **auth-required**, bool: Whether the user has access to the server. For
       unsecured servers, this may be true even before authenticating.
-    * **features**, string array: The capabilities of the server. The rest of
-      this document lists optional features that **SHOULD** be indicated by a
-      string present in this array. Proprietary, unspecified features may also
-      appear here.
+
+.. _resource object: http://jsonapi.org/format/#document-resource-objects
 
 .. sourcecode:: http
 
-    GET /aura HTTP/1.1
+    GET /aura/server HTTP/1.1
 
 .. sourcecode:: http
 
@@ -59,15 +69,14 @@ Server Information
     Content-Type: application/vnd.api+json
 
     {
-      "server": {
-        "aura-version": "0.1.0",
-        "host": "beets",
-        "host-version": "1.6.4",
-        "auth-required": false,
-        "features": [
-          "albums",
-          "artists"
-        ]
+      "data": {
+        "type": "server",
+        "id": "0",
+        "attributes": {
+          "aura-version": "0.1.0",
+          "server": "aura-ref",
+          "server-version": "0.1.1"
+        }
       }
     }
 
@@ -95,16 +104,21 @@ fields not listed in this specification. The optional fields are included in
 an effort to standardize the name and format of common (albeit not universal)
 metadata.
 
-.. _links:
 
-Links
-'''''
+.. _relationships:
 
-Resources can link to each other: for example, a track can link to its
-containing album and, conversely, an album can link to its tracks.
+Relationships
+'''''''''''''
 
-Links appear under the ``links`` key within the resource object. For example,
-a track object may link to its album like this:
+In AURA, there are `relationships`_ among resources. For example, a track can
+have a relationship to its containing album and, conversely, an album has
+relationships to its tracks.
+
+`JSON API relationships`_ appear under the ``relationships`` key within the resource
+object, which maps to an object.
+Values in that object are JSON API "relationship objects": in AURA, these are
+wrappers for `resource linkages`_, which indicate the ID of another resource.
+For example, a track object links to its album like this:
 
 .. sourcecode:: http
 
@@ -116,24 +130,32 @@ a track object may link to its album like this:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
+      "data": {
         "id": "42",
-        ...other track data here...,
-        "links": {
-          "albums": ["21"]
+        "type": "track",
+        "attributes": {
+           // ...
+        },
+        "relationships": {
+          "albums": [{ data: { type: "album", id: "84" } }]
         }
-      }]
+      }
     }
 
-The client can request inclusion of linked resources. The client provides an
+This means that the client can get more information about the album at
+``/aura/albums/84``.
+
+The client can request `inclusion`_ of related resources. The client provides an
 ``include`` request parameter containing a comma-separated list of resources.
-The response then **MUST** include any objects referenced in ``links``
-under a ``linked`` key in the top-level response object. (This kind of
-response is called a `compound document`_ in JSON API.) For example:
+The response then **MUST** include any such objects referenced in
+``relationships`` under an ``included`` key in the top-level response object.
+That ``included`` key maps to an array of resource objects.
+(This kind of response is called a `compound document`_ in JSON API.)
+For example:
 
 .. sourcecode:: http
 
-    GET /aura/tracks/42?include=albums HTTP/1.1
+    GET /aura/tracks/42?include=album HTTP/1.1
 
 .. sourcecode:: http
 
@@ -143,32 +165,39 @@ response is called a `compound document`_ in JSON API.) For example:
     {
       "tracks": [{
         "id": "42",
-        ...,
-        "links": {
-          "albums": ["21"]
+        "attributes": {
+           // ...
+        },
+        "relationships": {
+          "albums": [{ data: { type: "album", id: "84" } }]
         }
       }],
-      "linked": {
-        "albums": [{
-          "id": "21",
-          ...
-        }]
-      }
+      "included": [
+        {
+          "id": "84",
+          "type": "album",
+          // ...
+        }
+      ]
     }
 
-.. _compound document: http://jsonapi.org/format/#document-structure-compound-documents
+.. _compound document: http://jsonapi.org/format/#document-compound-documents
+.. _JSON API relationships: http://jsonapi.org/format/#document-resource-object-relationships
+.. _resource linkages: http://jsonapi.org/format/#document-resource-object-linkage
+.. _inclusion: http://jsonapi.org/format/#fetching-includes
 
 Filtering
 '''''''''
 
-Servers provide filtered lists of resources according to metadata. To request
-a subset of a collection, the client uses request parameters specifying the
-fields or links to filter on. If the client sends a parameter ``key=value``,
-the server **MUST** respond with only those resources whose ``key`` field
-exactly matches ``value``.
+Servers provide filtered lists of resources according to metadata.
+To request a subset of a collection, the client uses request parameters
+specifying the fields or links to filter on.
+If the client sends a parameter ``filter[key]=value``, the server **MUST**
+respond with only those resources whose ``key`` field exactly matches
+``value``.
 
-For example, the request ``/aura/tracks?title=Blackbird`` finds the track
-titled "Blackbird".
+For example, the request ``/aura/tracks?filter[title]=Blackbird`` finds the
+track titled "Blackbird."
 
 Filtering is by exact match only (i.e., no substring or case-insensitive
 matching is performed). More flexible queries may be eventually be specified
@@ -179,37 +208,33 @@ Pagination
 
 Collection endpoints can return truncated results to avoid potential
 performance issues on both the client and the server. Pagination works using
-an opaque *continuation token* that describes how to retrieve the next chunk
+a *pagination token* that describes how to retrieve the next chunk
 of results. (In practice, the token could be the offset in the collection, the
 id of the next item to return, or a reference to a database cursor.)
 Truncation can be requested by the client or unilaterally imposed by the
 server.
 
-Pagination applies to ``GET`` requests for the three collection endpoints
-(``/aura/tracks``, ``/aura/albums``, and ``/aura/artists``). A server **MAY**
-return a subset of the resources in a collection for any such request. If it
-does so, it **MUST** include a ``continue`` key in the response JSON document.
-The ``continue`` value is an opaque string.
+`Pagination`_ applies to the three collection endpoints (``/aura/tracks``,
+``/aura/albums``, and ``/aura/artists``).
+A server **MAY** truncate its responses. If it does so, it **MUST** provide
+pagination information in the ``links`` object of its response.
+That object **MUST** have a ``next`` member with a URL to the next page if one
+is available---otherwise, the ``next`` member may be null or missing
+altogether.
+The URL for the next page **MUST** be the same as the original, except that
+the ``page`` request holds a different value.
 
-The client **MAY** provide the string as a ``continue`` parameter in a
-subsequent ``GET`` request for the same resource. The server **MUST** then
-respond with a new set of resources. If there are no more resources in the
-collection, the server **MUST** not include the ``continue`` key in the
-response. The concatenation of all resources produced in a sequence of these
-continued responses **MUST** be the full sequence of resources in the
-collection (i.e., no overlapping and no gaps), provided that the collection is
-not modified during the sequence.
+.. _Pagination: http://jsonapi.org/format/#fetching-pagination
 
-A continuation token is not guaranteed to be useful after a single use. Once a
-token is used in a request, the server **MAY** respond to subsequent requests
-with the same token with an HTTP 410 "Gone" error. The server may also
-invalidate unused tokens after an implementation-defined expiration
-period. (This is critical for servers that retain state for each in-progress
+A pagination token is not guaranteed to be useful indefinitely. If a token
+expires, the server **MAY** respond to subsequent requests
+with the same token with an HTTP 410 "Gone" error.
+(This is critical for servers that retain state for each in-progress
 pagination sequence.)
 
 The client **MAY** include a ``limit`` parameter (an integer) with a
 collection ``GET`` request. The server **MUST** respond with *at most* that
-number of resources, although it may return fewer. (A ``continue`` token must
+number of resources, although it may return fewer. (A ``next`` link must
 be supplied if there are more results, as above.)
 
 For example, a client could request a "page" of results with a single result:
@@ -224,17 +249,17 @@ For example, a client could request a "page" of results with a single result:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
-        ...track data here...
-      }],
-      "continue": "sometoken"
+      "data": [ ... ],
+      "links": {
+        "next": "/aura/tracks?limit=1&page=sometoken"
+      }
     }
 
 The client can then issue another request for the next chunk:
 
 .. sourcecode:: http
 
-    GET /aura/tracks?limit=1&continue=sometoken
+    GET /aura/tracks?limit=1&page=sometoken
 
 .. sourcecode:: http
 
@@ -242,12 +267,10 @@ The client can then issue another request for the next chunk:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
-        ...another track data here...
-      }]
+      "data": [ ... ]
     }
 
-The absence of a ``continue`` key indicates that the sequence is finished
+The absence of a ``links.next`` URL indicates that the sequence is finished
 (there are only two tracks in the library).
 
 
@@ -259,29 +282,28 @@ An AURA server **MUST** expose a collection of tracks (i.e., individual songs).
 .. http:get:: /aura/tracks
     :synopsis: All tracks in the library.
 
-    The collection of all tracks in the library. The response is a JSON
-    object with at least the key ``tracks``, which maps to a JSON array of
-    track objects.
+    The collection of all tracks in the library. The ``data`` key in the
+    response corresponds to an array of objects, each of which is a JSON API
+    `resource object`_.
 
 .. http:get:: /aura/tracks/(id)
     :synopsis: A specific track.
 
     An individual track resource. The response is a JSON object where key
-    ``tracks`` maps to a single track object.
+    ``data`` maps to a single track resource object.
 
-Required Fields
-'''''''''''''''
+Required Attributes
+'''''''''''''''''''
 
-Track resources **MUST** have these keys:
+Track resources **MUST** have these attributes:
 
-* ``id``, string: A unique identifier.
 * ``title``, string: The song's name.
 * ``artist``, string array: The recording artists.
 
-Optional Fields
-'''''''''''''''
+Optional Attributes
+'''''''''''''''''''
 
-Tracks **MAY** have these keys:
+Tracks **MAY** have these attributes:
 
 * ``album``, string: The name of the release the track appears on.
 * ``track``, integer: The index of the track on its album.
@@ -300,7 +322,7 @@ Tracks **MAY** have these keys:
   on.
 * ``comments``, string: Free-form, user-specified information.
 
-These optional fields reflect audio metadata:
+These optional attributes reflect audio metadata:
 
 * ``type``, string: The MIME type of the associated audio file.
 * ``duration``, float: The (approximate) length of the audio in seconds.
@@ -314,48 +336,46 @@ These optional fields reflect audio metadata:
 * ``bitdepth``, integer: The number of bits per sample.
 * ``size``, integer: The size of the audio file in bytes.
 
-Links
-'''''
+Relationships
+'''''''''''''
 
-Track resources **MAY** link to albums they appear on and their recording
-artists using the ``albums`` and ``artists`` keys. The valid ``include``
-values for retrieving compound documents are, correspondingly, ``artists`` and
-``albums`` (see :ref:`links`).
+Track resources **MAY** have relationships to albums they appear on and their
+recording artists using the ``albums`` and ``artists`` fields.
+These keys are also the valid values for the ``include`` parameter (see
+:ref:`relationships`).
+
 
 Albums
 ------
 
-Album resources are optional. If a server supports albums, it **MUST**
-indicate the support by including the string "albums" in its ``features`` list
-(see :ref:`server-info`). If the server does not support albums, it **MUST**
-respond with an HTTP 404 error for all ``/aura/albums`` URLs.
+Album resources are optional.
+If the server does not support albums, it **MUST** respond with an HTTP 404
+error for all ``/aura/albums`` URLs.
 
 .. http:get:: /aura/albums
     :synopsis: All albums in the library.
 
     The collection of all albums in the library. The response is a JSON
-    object with at least the key ``albums``, which maps to a JSON array of
-    album objects.
+    object whose ``data`` key maps to an array of album resource objects.
 
 .. http:get:: /aura/albums/(id)
     :synopsis: A specific album.
 
-    An individual album resource. The response is a JSON object where key
-    ``albums`` maps to a single track object.
+    An individual album resource. The response is a JSON object where
+    ``data`` maps to a single album resource object.
 
-Required Fields
-'''''''''''''''
+Required Attributes
+'''''''''''''''''''
 
 Each album object **MUST** have at least these keys:
 
-* ``id``, string: A unique identifier.
 * ``title``, string: The album's name.
 * ``artist``, string array: The names of the artists responsible for the
   release (or another indicator such as "Various Artists" when no specific
   artist is relevant).
 
-Optional Fields
-'''''''''''''''
+Optional Attributes
+'''''''''''''''''''
 
 Albums **MAY** have these keys:
 
@@ -368,13 +388,13 @@ Albums **MAY** have these keys:
 * ``release_mbid``, string: A `MusicBrainz`_ release id.
 * ``release_group_mbid``, string: A MusicBrainz release group id.
 
-Links
-'''''
+Relationships
+'''''''''''''
 
-Album resources **MUST** link to their constituent tracks under the ``tracks``
-key. They **MAY** also link their performing artists under the ``artists``
-key. These keys are also the valid values for the ``include`` parameter (see
-:ref:`links`).
+Album resources **MUST** link to their constituent tracks via the ``tracks``
+field. They **MAY** also link their performing artists under the ``artists``
+field. These keys are also the valid values for the ``include`` parameter (see
+:ref:`relationships`).
 
 
 Artists
@@ -398,16 +418,16 @@ list (see :ref:`server-info`). If the server does not support artists, it
     An individual artist resource. The response is a JSON object where key
     ``artists`` maps to a single track object.
 
-Required Fields
-'''''''''''''''
+Required Attributes
+'''''''''''''''''''
 
 Each artist **MUST** have at least these keys:
 
 * ``id``, string: A unique identifier.
 * ``name``, string: The artist's name.
 
-Optional Fields
-'''''''''''''''
+Optional Attributes
+'''''''''''''''''''
 
 Artists **MAY** have these keys:
 
@@ -415,13 +435,15 @@ Artists **MAY** have these keys:
 
 .. _musicbrainz: http://musicbrainz.org
 
-Links
-'''''
+Relationships
+'''''''''''''
 
-Artist resources **MUST** link to their associated tracks under the ``tracks``
-key and **MAY** link to their albums artist under the ``albums`` key.
+Artist resources **MUST** have relationships to their associated tracks under
+the ``tracks`` key and **MAY** link to their albums artist under the
+``albums`` key.
 These keys are also the valid values for the ``include`` parameter (see
-:ref:`links`).
+:ref:`relationships`).
+
 
 Audio
 -----
@@ -477,12 +499,12 @@ Images
 Images can be associated with tracks, albums, and artists. Most pertinently,
 albums may have associated cover art.
 
-Each kind of resource is associated with its images via links (see
-:ref:`links`). The id for an image need not be globally unique; it only needs
+Each kind of resource is associated with its images via relationships (see
+:ref:`relationships`). The id for an image need not be globally unique; it only needs
 to be unique for the linked resource---a simple index, suffices for example.
 Clients can request information about resources either by explicitly
 requesting the image collection for a resource or by using an
-``?include=images`` parameter, as with other links. Unlike other resources,
+``?include=images`` parameter, as with other relationships. Unlike other resources,
 requesting a specific image returns the actual image data.
 
 For the image file endpoints, the response's ``Content-Type`` header **MUST**
@@ -519,7 +541,7 @@ indicate the type of the image file returned.
     Get the image file for an artist.
 
 For example, a track with images indicates those images' ids via an ``images``
-key on the ``links`` object. Specifying ``images`` in the ``include``
+key on the ``relationships`` object. Specifying ``images`` in the ``include``
 parameter requests more data under the response's ``linked`` key:
 
 .. sourcecode:: http
@@ -532,22 +554,22 @@ parameter requests more data under the response's ``linked`` key:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
+      "data": {
         "id": "42",
-        "links": {
-          "images": ["1"]
+        "type": "track",
+        "relationships": {
+          "images": [{ data: { type: "image", id: "1" }] }]
         }
       }],
-      "linked": {
-        "imaages": [{ "id": "1", ... }]
+      "included": {
+        "images": [{ "id": "1", ... }]
       }
     }
 
-Optional Fields
-'''''''''''''''
+Optional Attributes
+'''''''''''''''''''
 
-Image metadata resources are only required to have an ``id`` field. These
-other fields are optional:
+These fields on image resource objects are optional:
 
 * ``role``, string: A description of the image's purpose: "cover" for primary
   album art, etc.
