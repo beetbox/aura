@@ -315,8 +315,8 @@ Tracks **MAY** have these attributes:
 * ``day``, integer: The release date's day of the month.
 * ``bpm``, integer: Tempo, in beats per minute.
 * ``genre``, string array: The track's musical genres.
-* ``recording_mbid``, string: A `MusicBrainz`_ recording id.
-* ``track_mbid``, string: A MusicBrainz track id.
+* ``recording-mbid``, string: A `MusicBrainz`_ recording id.
+* ``track-mbid``, string: A MusicBrainz track id.
 * ``composer``, string array: The names of the music's composers.
 * ``albumartist``, string array: The artists for the release the track appears
   on.
@@ -385,8 +385,8 @@ Albums **MAY** have these keys:
 * ``month``, integer: The release date's month.
 * ``day``, integer: The release date's day of the month.
 * ``genre``, string array: The album's musical genres.
-* ``release_mbid``, string: A `MusicBrainz`_ release id.
-* ``release_group_mbid``, string: A MusicBrainz release group id.
+* ``release-mbid``, string: A `MusicBrainz`_ release id.
+* ``release-group-mbid``, string: A MusicBrainz release group id.
 
 Relationships
 '''''''''''''
