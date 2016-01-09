@@ -73,9 +73,9 @@ Server Information
         "type": "server",
         "id": "0",
         "attributes": {
-          "aura-version": "0.1.0",
+          "aura-version": "0.2.0",
           "server": "aura-ref",
-          "server-version": "0.1.1"
+          "server-version": "0.2.1"
         }
       }
     }
