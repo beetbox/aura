@@ -8,10 +8,10 @@
     "url": "https://github.com/sampsyo/aura"
   },
   "dependencies": {
-    "musicmetadata": "0.5.0",
-    "walk": "2.3.4",
-    "express": "4.10.0",
-    "cors": "2.5.0"
+    "musicmetadata": "^2.0.5",
+    "walk": "^2.3.13",
+    "express": "^4.16.3",
+    "cors": "^2.8.4"
   },
   "bin": {
     "aura-server": "./server.js"

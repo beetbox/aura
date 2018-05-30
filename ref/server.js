@@ -9,7 +9,7 @@ var cors = require('cors');
 
 // Read a track dictionary for a music file.
 var trackDict = function(path, func) {
-  var parser = musicmetadata(fs.createReadStream(path));
+  var parser = musicmetadata(fs.createReadStream(path), {});
   parser.on('metadata', function (metadata) {
     func({
       'path': path,
