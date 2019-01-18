@@ -7,6 +7,18 @@ var path = require('path');
 var express = require('express');
 var cors = require('cors');
 
+// Global information about this server resource
+const serverInformation = {
+  "type": "server",
+  "id": "0",
+  "attributes": {
+    "aura-version": "0.2.0",
+    "server": "aura-ref",
+    "server-version": "0.2.1",
+    "auth-required": true,
+  }
+};
+
 // Read a track dictionary for a music file.
 var trackDict = function(path, func) {
   musicmetadata(fs.createReadStream(path), function (err, metadata) {
@@ -67,6 +79,9 @@ readMetadata(process.argv[2] || '.', function (tracks) {
   };
 
   // AURA API endpoints.
+  aura.get('/server', jtype, function (req, res) {
+    res.json( serverInformation );
+  });
   aura.get('/tracks', jtype, function (req, res) {
     res.json({ 'tracks': tracks });
   });
