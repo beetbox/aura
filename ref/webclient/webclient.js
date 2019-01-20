@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
   var tracklist = document.getElementById('tracklist');
   var baseurl = 'http://0.0.0.0:8338/aura';
 
+  ajax(baseurl + '/server', function (json) {
+    var attr = json["attributes"];
+    for (var a in attr)
+      document.getElementById(a).textContent = a + ': ' + attr[a];
+  });
+
   ajax(baseurl + '/tracks', function (json) {
     for (var i = 0; i < json.tracks.length; ++i) {
       var track = json.tracks[i];
