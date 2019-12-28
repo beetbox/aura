@@ -520,7 +520,7 @@ indicate the type of the image file returned.
 
     Get an image file associated with a track.
 
-.. http:get:: /albums/(id)/images
+.. http:get:: /aura/albums/(id)/images
     :synopsis: Get information about album art images.
 
     Get the collection of metadata about album art images.
