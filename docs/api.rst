@@ -75,7 +75,8 @@ Server Information
         "attributes": {
           "aura-version": "0.2.0",
           "server": "aura-ref",
-          "server-version": "0.2.1"
+          "server-version": "0.2.1",
+          "auth-required": false
         }
       }
     }
