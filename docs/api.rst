@@ -75,7 +75,8 @@ Server Information
         "attributes": {
           "aura-version": "0.2.0",
           "server": "aura-ref",
-          "server-version": "0.2.1"
+          "server-version": "0.2.1",
+          "auth-required": false
         }
       }
     }
@@ -558,9 +559,9 @@ parameter requests more data under the response's ``linked`` key:
         "id": "42",
         "type": "track",
         "relationships": {
-          "images": [{ data: { type: "image", id: "1" }] }]
+          "images": [{ data: { type: "image", id: "1" } }]
         }
-      }],
+      },
       "included": {
         "images": [{ "id": "1", ... }]
       }
