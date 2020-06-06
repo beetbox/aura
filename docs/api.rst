@@ -138,7 +138,9 @@ For example, a track object links to its album like this:
            // ...
         },
         "relationships": {
-          "albums": [{ data: { type: "album", id: "84" } }]
+          "albums": {
+            "data": [ { "type": "album", "id": "84" } ]
+          }
         }
       }
     }
