@@ -138,7 +138,9 @@ For example, a track object links to its album like this:
            // ...
         },
         "relationships": {
-          "albums": [{ data: { type: "album", id: "84" } }]
+          "albums": {
+            "data": [ { "type": "album", "id": "84" } ]
+          }
         }
       }
     }
@@ -164,15 +166,17 @@ For example:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
+      "data": {
         "id": "42",
         "attributes": {
            // ...
         },
         "relationships": {
-          "albums": [{ data: { type: "album", id: "84" } }]
+          "albums": {
+            "data": [ { "type": "album", "id": "84" } ]
+          }
         }
-      }],
+      },
       "included": [
         {
           "id": "84",
@@ -543,7 +547,7 @@ indicate the type of the image file returned.
 
 For example, a track with images indicates those images' ids via an ``images``
 key on the ``relationships`` object. Specifying ``images`` in the ``include``
-parameter requests more data under the response's ``linked`` key:
+parameter requests more data under the response's ``included`` key:
 
 .. sourcecode:: http
 
@@ -556,15 +560,21 @@ parameter requests more data under the response's ``linked`` key:
 
     {
       "data": {
-        "id": "42",
+        "id": "43",
         "type": "track",
         "relationships": {
-          "images": [{ data: { type: "image", id: "1" } }]
+          "images": {
+            "data": [ { type: "image", id: "1" } ]
+          }
         }
       },
-      "included": {
-        "images": [{ "id": "1", ... }]
-      }
+      "included": [
+        {
+          "id": "1",
+          "type": "image",
+          // ...
+        }
+      ]
     }
 
 Optional Attributes
