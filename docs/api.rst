@@ -166,15 +166,17 @@ For example:
     Content-Type: application/vnd.api+json
 
     {
-      "tracks": [{
+      "data": {
         "id": "42",
         "attributes": {
            // ...
         },
         "relationships": {
-          "albums": [{ data: { type: "album", id: "84" } }]
+          "albums": {
+            "data": [ { "type": "album", "id": "84" } ]
+          }
         }
-      }],
+      },
       "included": [
         {
           "id": "84",
