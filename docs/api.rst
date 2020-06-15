@@ -450,8 +450,7 @@ Relationships
 '''''''''''''
 
 Artist resources **MUST** have relationships to their associated tracks under
-the ``tracks`` key and **MAY** link to their albums artist under the
-``albums`` key.
+the ``tracks`` key and **MAY** link to their albums under the ``albums`` key.
 These keys are also the valid values for the ``include`` parameter (see
 :ref:`relationships`).
 
