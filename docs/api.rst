@@ -303,7 +303,7 @@ Required Attributes
 Track resources **MUST** have these attributes:
 
 * ``title``, string: The song's name.
-* ``artist``, string array: The recording artists.
+* ``artist``, string: The recording artist.
 
 Optional Attributes
 '''''''''''''''''''
@@ -319,11 +319,11 @@ Tracks **MAY** have these attributes:
 * ``month``, integer: The release date's month.
 * ``day``, integer: The release date's day of the month.
 * ``bpm``, integer: Tempo, in beats per minute.
-* ``genre``, string array: The track's musical genres.
+* ``genre``, string: The track's musical genre.
 * ``recording-mbid``, string: A `MusicBrainz`_ recording id.
 * ``track-mbid``, string: A MusicBrainz track id.
-* ``composer``, string array: The names of the music's composers.
-* ``albumartist``, string array: The artists for the release the track appears
+* ``composer``, string: The name of the music's composer.
+* ``albumartist``, string: The artist for the release the track appears
   on.
 * ``comments``, string: Free-form, user-specified information.
 
@@ -340,6 +340,9 @@ These optional attributes reflect audio metadata:
 * ``bitrate``, integer: The number of bits per second in the encoding.
 * ``bitdepth``, integer: The number of bits per sample.
 * ``size``, integer: The size of the audio file in bytes.
+
+Support for multi-valued attributes like ``artists`` and ``genres`` may be
+specified in a future AURA extension.
 
 Relationships
 '''''''''''''
@@ -375,7 +378,7 @@ Required Attributes
 Each album object **MUST** have at least these keys:
 
 * ``title``, string: The album's name.
-* ``artist``, string array: The names of the artists responsible for the
+* ``artist``, string: The names of the artist responsible for the
   release (or another indicator such as "Various Artists" when no specific
   artist is relevant).
 
@@ -389,9 +392,12 @@ Albums **MAY** have these keys:
 * ``year``, integer: The year the album was released.
 * ``month``, integer: The release date's month.
 * ``day``, integer: The release date's day of the month.
-* ``genre``, string array: The album's musical genres.
+* ``genre``, string: The album's musical genres.
 * ``release-mbid``, string: A `MusicBrainz`_ release id.
 * ``release-group-mbid``, string: A MusicBrainz release group id.
+
+Support for multi-valued attributes like ``artists`` and ``genres`` may be
+specified in a future AURA extension.
 
 Relationships
 '''''''''''''
