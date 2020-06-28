@@ -202,11 +202,14 @@ respond with only those resources whose ``key`` field exactly matches
 ``value``.
 
 For example, the request ``/aura/tracks?filter[title]=Blackbird`` finds the
-track titled "Blackbird."
+track titled "Blackbird".
 
 Filtering is by exact match only (i.e., no substring or case-insensitive
 matching is performed). More flexible queries may be eventually be specified
 in an AURA extension.
+
+If there are no exact matches, or if the server does not support filtering by
+the given key, then the ``data`` key of the response should be an empty array.
 
 Pagination
 ''''''''''
