@@ -211,6 +211,57 @@ in an AURA extension.
 If there are no exact matches, or if the server does not support filtering by
 the given key, then the ``data`` key of the response should be an empty array.
 
+Sorting
+'''''''
+
+Sorting of collections and subsets of collections follows the
+`JSON API sorting`_ specification. Sort fields correspond to keys in a
+resource's ``attributes`` member.
+
+This example shows albums sorted by descending release date (newest first):
+
+.. sourcecode:: http
+
+    GET /aura/albums?sort=-year,-month,-day HTTP/1.1
+
+.. sourcecode:: http
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+      "data": [
+        {
+          "id": "42",
+          "attributes": {
+            // ...
+            "year": 2019,
+            "month": 3,
+            "day": 24,
+            // ...
+          }
+        },
+        {
+          "id": "39",
+          "attributes": {
+            // ...
+            "year": 2018,
+            "month": 12,
+            "day": 6,
+            // ...
+          }
+        },
+        // ...
+      ]
+    }
+
+If not all resources in the collection have the attribute specified by the sort
+parameter, then the server **SHOULD** return only those resources with the
+attribute. For example, the request ``/aura/tracks?sort=composer`` should
+return only those tracks with a ``composer`` attribute.
+
+.. _JSON API sorting: https://jsonapi.org/format/#fetching-sorting
+
 Pagination
 ''''''''''
 
