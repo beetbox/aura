@@ -310,7 +310,7 @@ For example, a client could request a "page" of results with a single result:
     {
       "data": [ ... ],
       "links": {
-        "next": "/aura/tracks?limit=1&page=sometoken"
+        "next": "http://example.org/aura/tracks?limit=1&page=sometoken"
       }
     }
 
