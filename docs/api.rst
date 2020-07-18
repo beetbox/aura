@@ -565,11 +565,14 @@ albums may have associated cover art.
 
 Each kind of resource is associated with its images via relationships (see
 :ref:`relationships`). The id for an image need not be globally unique; it only needs
-to be unique for the linked resource---a simple index, suffices for example.
+to be unique for the linked resource---a simple index suffices, for example.
 Clients can request information about resources either by explicitly
 requesting the image collection for a resource or by using an
 ``?include=images`` parameter, as with other relationships. Unlike other resources,
 requesting a specific image returns the actual image data.
+
+For all ``/aura/(collection)/(id)/images`` endpoints, the response is a JSON
+object whose ``data`` key maps to an array of image resource objects.
 
 For the image file endpoints, the response's ``Content-Type`` header **MUST**
 indicate the type of the image file returned.
@@ -604,6 +607,33 @@ indicate the type of the image file returned.
 
     Get the image file for an artist.
 
+Required Attributes
+'''''''''''''''''''
+
+Image resource objects have no required attributes.
+
+Optional Attributes
+'''''''''''''''''''
+
+These fields on image resource objects are optional:
+
+* ``role``, string: A description of the image's purpose: "cover" for primary
+  album art, etc.
+* ``mimetype``, string: The MIME type of the image.
+* ``width``, integer: The image's width in pixels.
+* ``height``, integer: The image's height in pixels.
+* ``size``, integer: The size of the image data in bytes.
+
+Relationships
+'''''''''''''
+
+It is implicit that image resources are related to their parent track, album
+or artist. Therefore image resource objects **SHOULD NOT** have a
+``relationships`` key.
+
+Example
+'''''''
+
 For example, a track with images indicates those images' ids via an ``images``
 key on the ``relationships`` object. Specifying ``images`` in the ``include``
 parameter requests more data under the response's ``included`` key:
@@ -621,6 +651,7 @@ parameter requests more data under the response's ``included`` key:
       "data": {
         "id": "43",
         "type": "track",
+        // ...
         "relationships": {
           "images": {
             "data": [ { type: "image", id: "1" } ]
@@ -631,19 +662,9 @@ parameter requests more data under the response's ``included`` key:
         {
           "id": "1",
           "type": "image",
-          // ...
+          "attributes": {
+            "role": "cover",
+          }
         }
       ]
     }
-
-Optional Attributes
-'''''''''''''''''''
-
-These fields on image resource objects are optional:
-
-* ``role``, string: A description of the image's purpose: "cover" for primary
-  album art, etc.
-* ``mimetype``, string: The MIME type of the image.
-* ``width``, integer: The image's width in pixels.
-* ``height``, integer: The image's height in pixels.
-* ``size``, integer: The size of the image data in bytes.
