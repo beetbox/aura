@@ -383,7 +383,7 @@ Tracks **MAY** have these attributes:
 
 These optional attributes reflect audio metadata:
 
-* ``type``, string: The MIME type of the associated audio file.
+* ``mimetype``, string: The MIME type of the associated audio file.
 * ``duration``, float: The (approximate) length of the audio in seconds.
 * ``framerate``, integer: The number of frames per second in the audio.
 * ``framecount``, integer: The total number of frames in the audio.
@@ -643,7 +643,7 @@ These fields on image resource objects are optional:
 
 * ``role``, string: A description of the image's purpose: "cover" for primary
   album art, etc.
-* ``type``, string: The MIME type of the image.
+* ``mimetype``, string: The MIME type of the image.
 * ``width``, integer: The image's width in pixels.
 * ``height``, integer: The image's height in pixels.
 * ``size``, integer: The size of the image data in bytes.
