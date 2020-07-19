@@ -401,10 +401,10 @@ specified in a future AURA extension.
 Relationships
 '''''''''''''
 
-Track resources **MAY** have relationships to albums they appear on and their
-recording artists using the ``albums`` and ``artists`` fields.
-These keys are also the valid values for the ``include`` parameter (see
-:ref:`relationships`).
+Track resources **MAY** have relationships to albums they appear on, their
+recording artists and any associated images using the ``albums``, ``artists``
+and ``images`` fields respectively. These keys are also the valid values for 
+the ``include`` parameter (see :ref:`relationships`).
 
 
 Albums
@@ -457,9 +457,9 @@ Relationships
 '''''''''''''
 
 Album resources **MUST** link to their constituent tracks via the ``tracks``
-field. They **MAY** also link their performing artists under the ``artists``
-field. These keys are also the valid values for the ``include`` parameter (see
-:ref:`relationships`).
+field. They **MAY** also link their performing artists and associated images
+under the ``artists`` and ``images`` fields. These keys are also the valid
+values for the ``include`` parameter (see :ref:`relationships`).
 
 
 Artists
@@ -504,9 +504,9 @@ Relationships
 '''''''''''''
 
 Artist resources **MUST** have relationships to their associated tracks under
-the ``tracks`` key and **MAY** link to their albums under the ``albums`` key.
-These keys are also the valid values for the ``include`` parameter (see
-:ref:`relationships`).
+the ``tracks`` field. They **MAY** also link to their albums and associated
+images under the ``albums`` and ``images`` fields. These keys are also the
+valid values for the ``include`` parameter (see :ref:`relationships`).
 
 
 Audio
