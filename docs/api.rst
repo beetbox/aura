@@ -132,8 +132,8 @@ For example, a track object links to its album like this:
 
     {
       "data": {
-        "id": "42",
         "type": "track",
+        "id": "42",
         "attributes": {
            // ...
         },
@@ -167,6 +167,7 @@ For example:
 
     {
       "data": {
+        "type": "track",
         "id": "42",
         "attributes": {
            // ...
@@ -179,8 +180,8 @@ For example:
       },
       "included": [
         {
-          "id": "84",
           "type": "album",
+          "id": "84",
           // ...
         }
       ]
@@ -232,6 +233,7 @@ This example shows albums sorted by descending release date (newest first):
     {
       "data": [
         {
+          "type": "album",
           "id": "42",
           "attributes": {
             // ...
@@ -242,6 +244,7 @@ This example shows albums sorted by descending release date (newest first):
           }
         },
         {
+          "type": "album", 
           "id": "39",
           "attributes": {
             // ...
@@ -649,8 +652,8 @@ parameter requests more data under the response's ``included`` key:
 
     {
       "data": {
-        "id": "43",
         "type": "track",
+        "id": "43",
         // ...
         "relationships": {
           "images": {
@@ -660,8 +663,8 @@ parameter requests more data under the response's ``included`` key:
       },
       "included": [
         {
-          "id": "1",
           "type": "image",
+          "id": "1",
           "attributes": {
             "role": "cover",
           }
