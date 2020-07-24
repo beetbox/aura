@@ -365,7 +365,7 @@ track resource objects **MUST** be the string ``"track"``.
 Required Attributes
 '''''''''''''''''''
 
-Track resources **MUST** have these attributes:
+Track resource objects **MUST** have these attributes:
 
 * ``title``, string: The song's name.
 * ``artist``, string: The recording artist.
@@ -373,7 +373,7 @@ Track resources **MUST** have these attributes:
 Optional Attributes
 '''''''''''''''''''
 
-Tracks **MAY** have these attributes:
+Tracks resource objects **MAY** have these attributes:
 
 * ``album``, string: The name of the release the track appears on.
 * ``track``, integer: The index of the track on its album.
@@ -445,7 +445,7 @@ album resource objects **MUST** be the string ``"album"``.
 Required Attributes
 '''''''''''''''''''
 
-Each album object **MUST** have at least these keys:
+Album resource objects **MUST** have these attributes:
 
 * ``title``, string: The album's name.
 * ``artist``, string: The names of the artist responsible for the
@@ -455,7 +455,7 @@ Each album object **MUST** have at least these keys:
 Optional Attributes
 '''''''''''''''''''
 
-Albums **MAY** have these keys:
+Album resource objects **MAY** have these attributes:
 
 * ``tracktotal``, integer: The number of tracks on the album.
 * ``disctotal``, integer: The number of media in the album.
@@ -505,15 +505,14 @@ all artist resource objects **MUST** be the string ``"artist"``.
 Required Attributes
 '''''''''''''''''''
 
-Each artist **MUST** have at least these keys:
+Artist resource objects **MUST** have these attributes:
 
-* ``id``, string: A unique identifier.
 * ``name``, string: The artist's name.
 
 Optional Attributes
 '''''''''''''''''''
 
-Artists **MAY** have these keys:
+Artist resource objects **MAY** have these attributes:
 
 * ``artist_mbid``, string: A `MusicBrainz`_ artist id.
 
