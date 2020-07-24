@@ -57,6 +57,11 @@ Server Information
     * **auth-required**, bool: Whether the user has access to the server. For
       unsecured servers, this may be true even before authenticating.
 
+    It **MAY** also contain these keys:
+
+    * **features**, string array: A list of optional features the server
+      supports.
+
 .. _resource object: http://jsonapi.org/format/#document-resource-objects
 
 .. sourcecode:: http
@@ -76,7 +81,8 @@ Server Information
           "aura-version": "0.2.0",
           "server": "aura-ref",
           "server-version": "0.2.1",
-          "auth-required": false
+          "auth-required": false,
+          "features": ["albums"]
         }
       }
     }
@@ -340,19 +346,21 @@ Tracks
 ------
 
 An AURA server **MUST** expose a collection of tracks (i.e., individual songs).
+Information about a track is provided in a track resource object, which is
+in the form of a JSON API `resource object`_. The top-level key ``type`` of all
+track resource objects **MUST** be the string ``"track"``.
 
 .. http:get:: /aura/tracks
     :synopsis: All tracks in the library.
 
-    The collection of all tracks in the library. The ``data`` key in the
-    response corresponds to an array of objects, each of which is a JSON API
-    `resource object`_.
+    The collection of all tracks in the library. The reponse is a JSON object
+    whose ``data`` key maps to an array of track resource objects.
 
 .. http:get:: /aura/tracks/(id)
     :synopsis: A specific track.
 
-    An individual track resource. The response is a JSON object where key
-    ``data`` maps to a single track resource object.
+    An individual track resource. The response is a JSON object whose ``data``
+    key maps to a single track resource object.
 
 Required Attributes
 '''''''''''''''''''
@@ -413,9 +421,14 @@ the ``include`` parameter (see :ref:`relationships`).
 Albums
 ------
 
-Album resources are optional.
-If the server does not support albums, it **MUST** respond with an HTTP 404
-error for all ``/aura/albums`` URLs.
+Album resources are optional. If a server supports artists, it **MUST**
+indicate the support by including the string ``"albums"`` in its ``features``
+list (see :ref:`server-info`). If the server does not support albums, it
+**MUST** respond with an HTTP 404 error for all ``/aura/albums`` URLs.
+Information about an album is provided in an album resource object, which is
+in the form of a JSON API `resource object`_. The top-level key ``type`` of all
+album resource objects **MUST** be the string ``"album"``.
+
 
 .. http:get:: /aura/albums
     :synopsis: All albums in the library.
@@ -426,8 +439,8 @@ error for all ``/aura/albums`` URLs.
 .. http:get:: /aura/albums/(id)
     :synopsis: A specific album.
 
-    An individual album resource. The response is a JSON object where
-    ``data`` maps to a single album resource object.
+    An individual album resource. The response is a JSON object whose ``data``
+    key maps to a single album resource object.
 
 Required Attributes
 '''''''''''''''''''
@@ -469,22 +482,25 @@ Artists
 -------
 
 Artist resources are optional. If a server supports artists, it **MUST**
-indicate the support by including the string "artists" in its ``features``
+indicate the support by including the string ``"artists"`` in its ``features``
 list (see :ref:`server-info`). If the server does not support artists, it
 **MUST** respond with an HTTP 404 error for all ``/aura/artists`` URLs.
+Information about an artist is provided in an artist resource object, which
+is in the form of a JSON API `resource object`_. The top-level key ``type`` of
+all artist resource objects **MUST** be the string ``"artist"``.
+
 
 .. http:get:: /aura/artists
     :synopsis: All artists in the library.
 
     The collection of all artists in the library. The response is a JSON
-    object with at least the key ``artists``, which maps to a JSON array of
-    artists objects.
+    object whose ``data`` key maps to an array of artist resource objects.
 
 .. http:get:: /aura/artists/(id)
     :synopsis: A specific artist.
 
-    An individual artist resource. The response is a JSON object where key
-    ``artists`` maps to a single track object.
+    An individual artist resource. The response is a JSON object whose ``data``
+    key maps to a single artist resource object.
 
 Required Attributes
 '''''''''''''''''''
