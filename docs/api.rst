@@ -527,6 +527,68 @@ images under the ``albums`` and ``images`` fields. These keys are also the
 valid values for the ``include`` parameter (see :ref:`relationships`).
 
 
+Images
+------
+
+Image resources are optional. If a server supports images, it **MUST**
+indicate the support by including the string ``"images"`` in its ``features``
+list (see :ref:`server-info`). If the server does not support images, it
+**MUST** respond with an HTTP 404 error for all ``/aura/images`` URLs.
+Information about an image is provided in an image resource object, which
+is in the form of a JSON API `resource object`_. The top-level key ``type`` of
+all image resource objects **MUST** be the string ``"image"``.
+
+Images can be associated with tracks, albums, and artists. Most pertinently,
+albums may have associated cover art.
+
+In contrast to the other resource types, servers **SHOULD** respond with an
+HTTP 404 error for the URL ``/aura/images``. This is because enumerating all
+images may be difficult for the server, and a large collection of image
+metadata is not generally useful to music browsers and players.
+
+The flexible string nature of resources' ``id`` field can be used to easily
+give images globally unique ids. For example, ``"album-3-cover.jpg"`` could be
+used to identify the cover image of the album with id ``"3"``. This type of id
+may be useful if image information is not stored in a database.
+
+.. http:get:: /aura/images/(id)
+    :synopsis: Metadata about a specific image.
+
+    Get metadata about a specific image. The response is a JSON object where
+    the ``data`` key maps to a single image resource object.
+
+.. http:get:: /aura/images/(id)/file
+    :synopsis: Download an image file.
+
+    Download an image file. The response's ``Content-Type`` header **MUST**
+    indicate the mimetype of the image file returned.
+
+Required Attributes
+'''''''''''''''''''
+
+Image resource objects have no required attributes.
+
+Optional Attributes
+'''''''''''''''''''
+
+These fields on image resource objects are optional:
+
+* ``role``, string: A description of the image's purpose: "cover" for primary
+  album art, etc.
+* ``mimetype``, string: The MIME type of the image.
+* ``width``, integer: The image's width in pixels.
+* ``height``, integer: The image's height in pixels.
+* ``size``, integer: The size of the image data in bytes.
+
+Relationships
+'''''''''''''
+
+Images **MAY** have relationships to any associated tracks, albums or artists
+using the ``tracks``, ``albums`` and ``artists`` fields. These keys are also
+the valid values for the ``include`` parameter (see :ref:`relationships`).
+Each image resource **MUST** have at least one relationship.
+
+
 Audio
 -----
 
@@ -573,116 +635,3 @@ Acceptable status (i.e., if it does not support transcoding). An omitted
 .. _range requests: https://tools.ietf.org/html/draft-ietf-httpbis-p5-range-26
 .. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
 .. _Content-Disposition: http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html#sec19.5.1
-
-
-Images
-------
-
-Images can be associated with tracks, albums, and artists. Most pertinently,
-albums may have associated cover art.
-
-Each kind of resource is associated with its images via relationships (see
-:ref:`relationships`). The id for an image need not be globally unique; it only needs
-to be unique for the linked resource---a simple index suffices, for example.
-Clients can request information about resources either by explicitly
-requesting the image collection for a resource or by using an
-``?include=images`` parameter, as with other relationships. Unlike other resources,
-requesting a specific image returns the actual image data.
-
-For all ``/aura/(collection)/(id)/images`` endpoints, the response is a JSON
-object whose ``data`` key maps to an array of image resource objects.
-
-For the image file endpoints, the response's ``Content-Type`` header **MUST**
-indicate the type of the image file returned.
-
-.. http:get:: /aura/tracks/(id)/images
-    :synopsis: Get information about images associated with a track.
-
-    Get the collection of metadata about the images associated with a track.
-
-.. http:get:: /aura/tracks/(id)/images/(image_id)
-    :synopsis: Get an image associated with a track.
-
-    Get an image file associated with a track.
-
-.. http:get:: /aura/albums/(id)/images
-    :synopsis: Get information about album art images.
-
-    Get the collection of metadata about album art images.
-
-.. http:get:: /aura/albums/(id)/images/(image_id)
-    :synopsis: Get an album art image.
-
-    Get an album art image file.
-
-.. http:get:: /aura/artists/(id)/images
-    :synopsis: Get information about images for an artist.
-
-    Get the collection of metadata about the images for an artist.
-
-.. http:get:: /aura/artists/(id)/image/(image_id)
-    :synopsis: Get an image for an artist.
-
-    Get the image file for an artist.
-
-Required Attributes
-'''''''''''''''''''
-
-Image resource objects have no required attributes.
-
-Optional Attributes
-'''''''''''''''''''
-
-These fields on image resource objects are optional:
-
-* ``role``, string: A description of the image's purpose: "cover" for primary
-  album art, etc.
-* ``mimetype``, string: The MIME type of the image.
-* ``width``, integer: The image's width in pixels.
-* ``height``, integer: The image's height in pixels.
-* ``size``, integer: The size of the image data in bytes.
-
-Relationships
-'''''''''''''
-
-It is implicit that image resources are related to their parent track, album
-or artist. Therefore image resource objects **SHOULD NOT** have a
-``relationships`` key.
-
-Example
-'''''''
-
-For example, a track with images indicates those images' ids via an ``images``
-key on the ``relationships`` object. Specifying ``images`` in the ``include``
-parameter requests more data under the response's ``included`` key:
-
-.. sourcecode:: http
-
-    GET /aura/tracks/42?include=images
-
-.. sourcecode:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-      "data": {
-        "type": "track",
-        "id": "43",
-        // ...
-        "relationships": {
-          "images": {
-            "data": [ { type: "image", id: "1" } ]
-          }
-        }
-      },
-      "included": [
-        {
-          "type": "image",
-          "id": "1",
-          "attributes": {
-            "role": "cover",
-          }
-        }
-      ]
-    }
