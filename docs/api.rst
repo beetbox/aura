@@ -624,9 +624,9 @@ To request audio under a maximum bitrate, the client uses a ``bitrate``
 parameter to specify the maximum bits per second it is willing to accept.
 
 For example, the header ``Accept: audio/ogg, audio/mpeg`` requests audio in
-either MP3 or Ogg Vorbis format with no quality constraints. Similarly,
-``Accept: audio/ogg;bitrate=128000`` requests Vobris audio at a bitrate of
-128kbps or lower.
+either MP3 or `Ogg`_ (Vorbis, Opus, etc.) format with no quality constraints.
+Similarly, ``Accept: audio/ogg;bitrate=128000`` requests Ogg audio at a bitrate
+of 128kbps or lower.
 
 The server **SHOULD** respond with one of the requested types or a 406 Not
 Acceptable status (i.e., if it does not support transcoding). An omitted
@@ -635,3 +635,4 @@ Acceptable status (i.e., if it does not support transcoding). An omitted
 .. _range requests: https://tools.ietf.org/html/rfc7233
 .. _HTTP content negotiation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation#The_Accept.3a_header
 .. _Content-Disposition: http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html#sec19.5.1
+.. _Ogg: https://wiki.xiph.org/Ogg
