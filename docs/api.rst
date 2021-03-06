@@ -514,7 +514,7 @@ Optional Attributes
 
 Artist resource objects **MAY** have these attributes:
 
-* ``artist_mbid``, string: A `MusicBrainz`_ artist id.
+* ``artist-mbid``, string: A `MusicBrainz`_ artist id.
 
 .. _musicbrainz: http://musicbrainz.org
 
