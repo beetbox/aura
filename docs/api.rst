@@ -111,6 +111,8 @@ fields not listed in this specification. The optional fields are included in
 an effort to standardize the name and format of common (albeit not universal)
 metadata.
 
+Names of attributes, including non-standard attributes, **SHOULD** only contain
+characters matched by the regular expression ``[a-zA-Z0-9_-]``.
 
 .. _relationships:
 
